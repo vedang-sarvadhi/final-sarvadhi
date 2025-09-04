@@ -1,20 +1,18 @@
 import {
-  Button,
-  Center,
-  Container,
-  Flex,
-  Loader,
-  Paper,
-  Table,
-  Title,
+	Button,
+	Center,
+	Container,
+	Flex,
+	Loader,
+	Paper,
+	Table,
+	Title,
 } from "@mantine/core";
 import { Link } from "react-router-dom";
 import { useData } from "../../../context/DataContext.jsx";
-import { useAuth } from "../../auth/context/AuthContext.jsx";
 
 export default function EmployeesTable() {
-	const { isLoading } = useData();
-  const { user } = useAuth();
+	const { isLoading, employees } = useData();
 
 	return (
 		<Container size="lg" mt="xl">
@@ -44,12 +42,14 @@ export default function EmployeesTable() {
 								</Table.Tr>
 							</Table.Thead>
 							<Table.Tbody>
-									<Table.Tr key={user.id}>
-										<Table.Td>{user.name}</Table.Td>
-										<Table.Td>{user.email}</Table.Td>
-										<Table.Td>{user.department}</Table.Td>
-										<Table.Td>{user.role}</Table.Td>
+								{employees.map((p) => (
+									<Table.Tr key={p.id}>
+										<Table.Td>{p.name}</Table.Td>
+										<Table.Td>{p.email}</Table.Td>
+										<Table.Td>{p.department}</Table.Td>
+										<Table.Td>{p.role}</Table.Td>
 									</Table.Tr>
+								))}
 							</Table.Tbody>
 						</Table>
 					</Table.ScrollContainer>

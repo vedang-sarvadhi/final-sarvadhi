@@ -1,9 +1,9 @@
 import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
+	createContext,
+	useContext,
+	useEffect,
+	useMemo,
+	useReducer,
 } from "react";
 import { useLocation } from "react-router-dom";
 import { useData } from "../../../context/DataContext.jsx";
@@ -12,6 +12,7 @@ import { PERMISSIONS, ROLES } from "../../../core/permissions.js";
 const initialState = {
 	user: null,
 	isAuthenticated: false,
+	isLoading: true,
 };
 
 function authReducer(state, action) {
@@ -25,6 +26,7 @@ function authReducer(state, action) {
 				...state,
 				user: action.payload,
 				isAuthenticated: !!action.payload,
+				isLoading: false,
 			};
 		default:
 			throw new Error("Unknown action type");
@@ -48,6 +50,8 @@ export default function AuthProvider({ children }) {
 		const savedUser = localStorage.getItem("user");
 		if (savedUser) {
 			dispatch({ type: "restore", payload: JSON.parse(savedUser) });
+		} else {
+			dispatch({ type: "restore", payload: null });
 		}
 	}, []);
 
@@ -99,6 +103,13 @@ export default function AuthProvider({ children }) {
 		return state?.user?.permissions?.includes(page) ?? false;
 	}
 
+	const visibleEmployees =
+		state.user?.role === ROLES.ADMIN
+			? employees.map(({ password, ...e }) => e)
+			: state.user
+				? [{ ...state.user }]
+				: [];
+
 	return (
 		<AuthContext.Provider
 			value={{
@@ -106,7 +117,7 @@ export default function AuthProvider({ children }) {
 				authenticateEmployee,
 				logout,
 				hasPermission,
-				employeeMap,
+				employees: visibleEmployees,
 			}}
 		>
 			{children}
@@ -117,18 +128,20 @@ export default function AuthProvider({ children }) {
 export function useAuth() {
 	const {
 		authenticateEmployee,
-		employeeMap,
 		user,
+		employees,
 		isAuthenticated,
 		logout,
+		isLoading,
 		hasPermission,
 	} = useContext(AuthContext);
 	return {
 		authenticateEmployee,
-		employeeMap,
 		user,
+		employees,
 		isAuthenticated,
 		logout,
+		isLoading,
 		hasPermission,
 	};
 }

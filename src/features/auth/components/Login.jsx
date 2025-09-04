@@ -1,14 +1,14 @@
 "use client";
 
 import {
-  Button,
-  Container,
-  Paper,
-  PasswordInput,
-  Stack,
-  Text,
-  TextInput,
-  Title,
+	Button,
+	Container,
+	Paper,
+	PasswordInput,
+	Stack,
+	Text,
+	TextInput,
+	Title,
 } from "@mantine/core";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -37,7 +37,6 @@ export default function Login() {
 				navigate("/unauthorized");
 			}
 		} else {
-			console.log("❌ Login failed:", error);
 			setError(error || "❌ Invalid email or password");
 		}
 	}

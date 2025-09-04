@@ -33,13 +33,8 @@ export default function DataProvider({ children }) {
 }
 
 export function useData() {
-	const {
-		employees,
-		projects,
-		totalProjects,
-		isLoading,
-		error,
-	} = useContext(DataContext);
+	const { employees, projects, totalProjects, isLoading, error } =
+		useContext(DataContext);
 
 	return {
 		employees,
