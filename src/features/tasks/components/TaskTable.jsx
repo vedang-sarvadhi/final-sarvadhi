@@ -15,9 +15,8 @@ import {
 	Title,
 } from "@mantine/core";
 import { useReducer } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useEntity } from "../../../hooks/useEntity.js";
-import { useAuth } from "../../auth/context/AuthContext.jsx";
 
 function reducer(state, action) {
 	switch (action.type) {
@@ -44,13 +43,15 @@ function reducer(state, action) {
 
 export default function TaskTable() {
 	const { loading, deleteItem } = useEntity("employees");
-	const { user } = useAuth();
 	const { projectId } = useParams();
+	const location = useLocation();
+	const projects = location.state?.projects ?? [];
 
-	const projects = user?.projects ?? [];
 	const allProjects = new Map(projects.map((p) => [p.id, p]));
 	const mainProject = allProjects.get(projectId);
 	const tasks = mainProject?.tasks ?? [];
+
+	console.log(tasks);
 
 	const [state, dispatch] = useReducer(reducer, {
 		editMode: false,

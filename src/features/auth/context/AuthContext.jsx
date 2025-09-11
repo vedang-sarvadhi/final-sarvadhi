@@ -62,6 +62,37 @@ export default function AuthProvider({ children }) {
 		}
 	}, [location.pathname]);
 
+	const projectMap = useMemo(() => {
+		const map = new Map();
+
+		employees.forEach((emp) => {
+			emp.projects?.forEach((proj) => {
+				if (!map.has(proj.id)) {
+					// first time seeing this project → create it
+					map.set(proj.id, {
+						...proj,
+						tasks: [], // ensure tasks array is fresh
+						owners: new Set(), // track multiple owners
+					});
+				}
+
+				const existing = map.get(proj.id);
+				// merge tasks (spread so we don't nest arrays)
+				existing.tasks.push(...proj.tasks);
+				// track owner(s)
+				existing.owners.add(emp.name);
+			});
+		});
+
+		// Convert owners Set → Array before returning
+		return new Map(
+			[...map.entries()].map(([id, proj]) => [
+				id,
+				{ ...proj, owners: [...proj.owners] },
+			]),
+		);
+	}, [employees]);
+
 	async function authenticateEmployee(email, password) {
 		const emp = employeeMap.get(email.toLowerCase());
 
@@ -118,6 +149,7 @@ export default function AuthProvider({ children }) {
 				logout,
 				hasPermission,
 				employees: visibleEmployees,
+				projectMap,
 			}}
 		>
 			{children}
@@ -130,6 +162,7 @@ export function useAuth() {
 		authenticateEmployee,
 		user,
 		employees,
+		projectMap,
 		isAuthenticated,
 		logout,
 		isLoading,
@@ -139,6 +172,7 @@ export function useAuth() {
 		authenticateEmployee,
 		user,
 		employees,
+		projectMap,
 		isAuthenticated,
 		logout,
 		isLoading,

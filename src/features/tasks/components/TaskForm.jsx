@@ -15,6 +15,7 @@ import "@mantine/dates/styles.css";
 import { Controller, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useEntity } from "../../../hooks/useEntity.js";
+import { useAuth } from "../../auth/context/AuthContext.jsx";
 
 const assigneeOptions = [
 	{ value: "john", label: "John Doe" },
@@ -42,6 +43,10 @@ const priorityOptions = [
 export default function TaskForm() {
 	const navigate = useNavigate();
 	const { addItem } = useEntity("employees");
+
+	const { employees } = useAuth();
+
+	console.log("main main", employees);
 
 	const {
 		register,

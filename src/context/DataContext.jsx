@@ -17,6 +17,9 @@ export default function DataProvider({ children }) {
 		}, {}),
 	);
 
+	console.log(totalProjects);
+	// const tasks =
+
 	return (
 		<DataContext.Provider
 			value={{

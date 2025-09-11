@@ -1,59 +1,28 @@
 import {
-  Button,
-  Center,
-  Container,
-  Flex,
-  Loader,
-  Paper,
-  Table,
-  Title,
+	Button,
+	Center,
+	Container,
+	Flex,
+	Loader,
+	Paper,
+	Table,
+	Title,
 } from "@mantine/core";
-import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useData } from "../../../context/DataContext.jsx";
 import { useAuth } from "../../auth/context/AuthContext.jsx";
 
 export default function ProjectTable() {
 	const { isLoading } = useData();
-	const { user, employees } = useAuth();
+	const { user, projectMap } = useAuth();
 
-const projectMap = useMemo(() => {
-  const map = new Map();
+	console.log(user);
 
-  employees.forEach((emp) => {
-    emp.projects?.forEach((proj) => {
-      if (!map.has(proj.id)) {
-        // first time seeing this project → create it
-        map.set(proj.id, {
-          ...proj,
-          tasks: [], // ensure tasks array is fresh
-          owners: new Set() // track multiple owners
-        });
-      }
-
-      const existing = map.get(proj.id);
-      // merge tasks (spread so we don't nest arrays)
-      existing.tasks.push(...proj.tasks);
-      // track owner(s)
-      existing.owners.add(emp.name);
-    });
-  });
-
-  // Convert owners Set → Array before returning
-  return new Map(
-    [...map.entries()].map(([id, proj]) => [
-      id,
-      { ...proj, owners: [...proj.owners] }
-    ])
-  );
-}, [employees]);
-
-// Decide which projects to show (admin = all, employee = only theirs)
-const visibleProjects =
-  user.role === "admin"
-    ? Array.from(projectMap.values())
-    : user.projects || [];
-
+	// Decide which projects to show (admin = all, employee = only theirs)
+	const visibleProjects =
+		user.role === "admin"
+			? Array.from(projectMap.values())
+			: user.projects || [];
 
 	console.log("🔎 projectMap", projectMap);
 	console.log("👀 visibleProjects", visibleProjects);
@@ -90,7 +59,12 @@ const visibleProjects =
 										<Table.Td>{p.projectName}</Table.Td>
 										<Table.Td>{p.description}</Table.Td>
 										<Table.Td>
-											<Link to={`/projects/${p.id}`}>View</Link>
+											<Link
+												to={`/projects/${p.id}`}
+												state={{ projects: visibleProjects }}
+											>
+												View
+											</Link>
 										</Table.Td>
 									</Table.Tr>
 								))}
