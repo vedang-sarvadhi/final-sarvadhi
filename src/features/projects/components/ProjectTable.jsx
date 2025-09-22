@@ -45,7 +45,16 @@ export default function ProjectTable() {
 	const { user } = useAuth();
 
 	const visibleProjects =
-		user?.role === ROLES.ADMIN ? totalProjects : user?.projects || [];
+		user?.role === ROLES.ADMIN
+			? totalProjects
+			: totalProjects.filter((p) => {
+				const userProjectIds = Array.isArray(user?.projects) ? user.projects : [];
+				const isInAssignedProjects = p.projectIds?.some((id) => userProjectIds.includes(id));
+				const hasAssignedTasks = Array.isArray(p.tasks)
+					? p.tasks.some((t) => t.assignee === user?.id)
+					: false;
+				return isInAssignedProjects || hasAssignedTasks;
+			});
 
 	return (
 		<ErrorBoundary>
@@ -99,7 +108,8 @@ export default function ProjectTable() {
 												<Table.Td>{p.projectName}</Table.Td>
 												<Table.Td>{p.description}</Table.Td>
 												<Table.Td>
-													<Link to={`/projects/${projectId}`}>View</Link>
+													<Link to={`/projects/${projectId}`}
+                             style={{ textDecoration: "none", color: "#228be6", fontWeight: 500 }}>View</Link>
 												</Table.Td>
 											</Table.Tr>
 										);

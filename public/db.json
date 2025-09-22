@@ -63,6 +63,30 @@
       "password": "jay123",
       "department": "react ",
       "role": "admin"
+    },
+    {
+      "id": "e16f",
+      "name": "krish ",
+      "email": "krish@gmail.com",
+      "password": "krish@124",
+      "department": "node",
+      "role": "developer"
+    },
+    {
+      "id": "8878",
+      "name": "harsh",
+      "email": "harsh@gmail.com",
+      "password": "harsg@123",
+      "department": "flutter",
+      "role": "developer"
+    },
+    {
+      "id": "6f51",
+      "name": "ansh",
+      "email": "ansh@gmail.com",
+      "password": "ansh@124",
+      "department": "react ",
+      "role": "developer"
     }
   ],
   "projects": [
@@ -155,13 +179,31 @@
       "projectName": "HRMS",
       "description": "make hrms ",
       "tasks": []
+    },
+    {
+      "id": "9280",
+      "projectName": "project for harsh",
+      "description": "final harsh project",
+      "tasks": []
+    },
+    {
+      "id": "f843",
+      "projectName": "vedang project ",
+      "description": "final vedang project ",
+      "tasks": []
+    },
+    {
+      "id": "683e",
+      "projectName": "project for ansh",
+      "description": "Ansh is main project ",
+      "tasks": []
     }
   ],
   "tasks": [
     {
       "id": "t1_p1_1",
       "task": "Create wireframes for new layout",
-      "assignee": "Jack Smith",
+      "assignee": "1",
       "dueDate": "2024-09-05",
       "status": "In Progress",
       "priority": "high",
@@ -171,7 +213,7 @@
     {
       "id": "t2_p1_1",
       "task": "Research modern design trends",
-      "assignee": "Jack Smith",
+      "assignee": "1",
       "dueDate": "2024-09-10",
       "status": "Completed",
       "priority": "medium",
@@ -181,7 +223,7 @@
     {
       "id": "t3_p1_1",
       "task": "Coordinate with development team",
-      "assignee": "Jack Smith",
+      "assignee": "1",
       "dueDate": "2024-09-15",
       "status": "Not Started",
       "priority": "medium",
@@ -191,7 +233,7 @@
     {
       "id": "t1_p2_1",
       "task": "Set up development environment",
-      "assignee": "Jack Smith",
+      "assignee": "1",
       "dueDate": "2024-09-03",
       "status": "Completed",
       "priority": "high",
@@ -201,7 +243,7 @@
     {
       "id": "t2_p2_1",
       "task": "Create project timeline",
-      "assignee": "Jack Smith",
+      "assignee": "1",
       "dueDate": "2024-09-08",
       "status": "In Progress",
       "priority": "medium",
@@ -211,7 +253,7 @@
     {
       "id": "t3_p2_1",
       "task": "Coordinate with design team",
-      "assignee": "Jack Smith",
+      "assignee": "1",
       "dueDate": "2024-09-12",
       "status": "Not Started",
       "priority": "low",
@@ -219,29 +261,9 @@
       "employeeId": "1"
     },
     {
-      "id": "t1_p1_2",
-      "task": "Update team member profiles",
-      "assignee": "Sarah Johnson",
-      "dueDate": "2024-09-07",
-      "status": "Completed",
-      "priority": "medium",
-      "projectId": "p1_2",
-      "employeeId": "2"
-    },
-    {
-      "id": "t2_p1_2",
-      "task": "Review job postings section",
-      "assignee": "Sarah Johnson",
-      "dueDate": "2024-09-14",
-      "status": "In Progress",
-      "priority": "high",
-      "projectId": "p1_2",
-      "employeeId": "2"
-    },
-    {
       "id": "t3_p1_2",
       "task": "Coordinate with hiring managers",
-      "assignee": "Sarah Johnson",
+      "assignee": "2",
       "dueDate": "2024-09-20",
       "status": "Pending",
       "priority": "medium",
@@ -251,7 +273,7 @@
     {
       "id": "t1_p3_2",
       "task": "Map HR processes to CRM",
-      "assignee": "Sarah Johnson",
+      "assignee": "2",
       "dueDate": "2024-09-09",
       "status": "In Progress",
       "priority": "high",
@@ -261,7 +283,7 @@
     {
       "id": "t2_p3_2",
       "task": "Train HR team on new system",
-      "assignee": "Sarah Johnson",
+      "assignee": "2",
       "dueDate": "2024-09-16",
       "status": "Not Started",
       "priority": "medium",
@@ -271,7 +293,7 @@
     {
       "id": "t3_p3_2",
       "task": "Create user documentation",
-      "assignee": "Sarah Johnson",
+      "assignee": "2",
       "dueDate": "2024-09-23",
       "status": "Not Started",
       "priority": "low",
@@ -281,7 +303,7 @@
     {
       "id": "t1_p5_2",
       "task": "Backup employee records",
-      "assignee": "Sarah Johnson",
+      "assignee": "2",
       "dueDate": "2024-09-05",
       "status": "Completed",
       "priority": "high",
@@ -291,7 +313,7 @@
     {
       "id": "t2_p5_2",
       "task": "Verify data integrity",
-      "assignee": "Sarah Johnson",
+      "assignee": "2",
       "dueDate": "2024-09-12",
       "status": "In Progress",
       "priority": "high",
@@ -301,7 +323,7 @@
     {
       "id": "t3_p5_2",
       "task": "Test new system access",
-      "assignee": "Sarah Johnson",
+      "assignee": "2",
       "dueDate": "2024-09-19",
       "status": "Pending",
       "priority": "medium",
@@ -311,7 +333,7 @@
     {
       "id": "t1_p2_3",
       "task": "Develop user authentication",
-      "assignee": "Michael Brown",
+      "assignee": "3",
       "dueDate": "2024-09-06",
       "status": "Completed",
       "priority": "high",
@@ -321,7 +343,7 @@
     {
       "id": "t2_p2_3",
       "task": "Implement shopping cart functionality",
-      "assignee": "Michael Brown",
+      "assignee": "3",
       "dueDate": "2024-09-13",
       "status": "In Progress",
       "priority": "high",
@@ -331,7 +353,7 @@
     {
       "id": "t3_p2_3",
       "task": "Write unit tests",
-      "assignee": "Michael Brown",
+      "assignee": "3",
       "dueDate": "2024-09-20",
       "status": "Not Started",
       "priority": "medium",
@@ -341,7 +363,7 @@
     {
       "id": "t2_p3_3",
       "task": "Implement data synchronization",
-      "assignee": "Michael Brown",
+      "assignee": "3",
       "dueDate": "2024-09-15",
       "status": "In Progress",
       "priority": "high",
@@ -351,7 +373,7 @@
     {
       "id": "t3_p3_3",
       "task": "Create error handling system",
-      "assignee": "Michael Brown",
+      "assignee": "3",
       "dueDate": "2024-09-22",
       "status": "Not Started",
       "priority": "medium",
@@ -361,7 +383,7 @@
     {
       "id": "t3_p1_4",
       "task": "Optimize SEO elements",
-      "assignee": "Emily Davis",
+      "assignee": "4",
       "dueDate": "2024-09-18",
       "status": "Pending",
       "priority": "medium",
@@ -371,7 +393,7 @@
     {
       "id": "t1_p5_4",
       "task": "Analyze marketing analytics data",
-      "assignee": "Emily Davis",
+      "assignee": "4",
       "dueDate": "2024-09-07",
       "status": "Completed",
       "priority": "medium",
@@ -381,7 +403,7 @@
     {
       "id": "t2_p5_4",
       "task": "Migrate customer segmentation data",
-      "assignee": "Emily Davis",
+      "assignee": "4",
       "dueDate": "2024-09-14",
       "status": "In Progress",
       "priority": "high",
@@ -391,7 +413,7 @@
     {
       "id": "t3_p5_4",
       "task": "Verify campaign data integrity",
-      "assignee": "Emily Davis",
+      "assignee": "4",
       "dueDate": "2024-09-21",
       "status": "Not Started",
       "priority": "medium",
@@ -489,19 +511,9 @@
       "employeeId": "5"
     },
     {
-      "id": "t1_p1_6",
-      "task": "Review lead capture forms",
-      "assignee": "Laura Miller",
-      "dueDate": "2024-09-05",
-      "status": "Completed",
-      "priority": "high",
-      "projectId": "p1_6",
-      "employeeId": "6"
-    },
-    {
       "id": "t2_p1_6",
       "task": "Optimize sales funnel pages",
-      "assignee": "Laura Miller",
+      "assignee": "6",
       "dueDate": "2024-09-12",
       "status": "In Progress",
       "priority": "high",
@@ -511,7 +523,7 @@
     {
       "id": "t3_p1_6",
       "task": "Test contact forms",
-      "assignee": "Laura Miller",
+      "assignee": "6",
       "dueDate": "2024-09-19",
       "status": "Pending",
       "priority": "medium",
@@ -521,7 +533,7 @@
     {
       "id": "t1_p3_6",
       "task": "Map sales processes to CRM",
-      "assignee": "Laura Miller",
+      "assignee": "6",
       "dueDate": "2024-09-08",
       "status": "Completed",
       "priority": "high",
@@ -531,7 +543,7 @@
     {
       "id": "t2_p3_6",
       "task": "Train sales team on new system",
-      "assignee": "Laura Miller",
+      "assignee": "6",
       "dueDate": "2024-09-15",
       "status": "In Progress",
       "priority": "high",
@@ -541,7 +553,7 @@
     {
       "id": "t3_p3_6",
       "task": "Create sales reporting dashboard",
-      "assignee": "Laura Miller",
+      "assignee": "6",
       "dueDate": "2024-09-22",
       "status": "Not Started",
       "priority": "medium",
@@ -582,7 +594,196 @@
       "status": "not started",
       "priority": "medium",
       "dueDate": "2025-09-13",
-      "projectId": "undefined"
+      "projectId": "61e1"
+    },
+    {
+      "id": "054d",
+      "task": "work on design",
+      "assignee": "e16f",
+      "status": "in-progress",
+      "priority": "high",
+      "dueDate": "2025-09-25",
+      "projectId": "61e1"
+    },
+    {
+      "id": "c6ed",
+      "task": "OKAY",
+      "assignee": "2",
+      "status": "in-progress",
+      "priority": "medium",
+      "dueDate": "2025-10-04",
+      "projectId": "61e1"
+    },
+    {
+      "id": "ee5c",
+      "task": "OKAY",
+      "assignee": "1",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-09-12",
+      "projectId": "p5_2"
+    },
+    {
+      "id": "9ef2",
+      "task": "xzcZXC",
+      "assignee": "2",
+      "status": "not started",
+      "priority": "low",
+      "dueDate": "2025-10-04",
+      "projectId": "p5_2"
+    },
+    {
+      "id": "3d4a",
+      "task": "final - okay ",
+      "assignee": "2",
+      "status": "in-progress",
+      "priority": "medium",
+      "dueDate": "2025-10-02",
+      "projectId": "p5_2"
+    },
+    {
+      "id": "8ad3",
+      "task": "OKAY",
+      "assignee": "1",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-09-06",
+      "projectId": "p5_2"
+    },
+    {
+      "id": "bead",
+      "task": "final - main",
+      "assignee": "1",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-10-04",
+      "projectId": "p5_2"
+    },
+    {
+      "id": "2ded",
+      "task": "final - demo ",
+      "assignee": "1",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-10-02",
+      "projectId": "p5_2"
+    },
+    {
+      "id": "3998",
+      "task": "esdrtqewtrqewr",
+      "assignee": "4",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-09-27",
+      "projectId": "p5_2"
+    },
+    {
+      "id": "e6b6",
+      "task": "okay ",
+      "assignee": "3",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-10-03",
+      "projectId": "p5_2"
+    },
+    {
+      "id": "cd1a",
+      "task": "final okoko ",
+      "assignee": "1",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-10-01",
+      "projectId": "p5_2"
+    },
+    {
+      "id": "f26a",
+      "task": "final done code ",
+      "assignee": "2",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-09-24",
+      "projectId": "61e1"
+    },
+    {
+      "id": "ec74",
+      "task": "vedang",
+      "assignee": "2",
+      "status": "in-progress",
+      "priority": "high",
+      "dueDate": "2025-09-21",
+      "projectId": "p1_1"
+    },
+    {
+      "id": "503e",
+      "task": "final vedang ",
+      "assignee": "1",
+      "status": "in-progress",
+      "priority": "low",
+      "dueDate": "2025-09-25",
+      "projectId": "61e1"
+    },
+    {
+      "id": "bb13",
+      "task": "main ",
+      "assignee": "2",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-10-05",
+      "projectId": "p2_1"
+    },
+    {
+      "id": "cb23",
+      "task": "main",
+      "assignee": "2",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-10-01",
+      "projectId": "61e1"
+    },
+    {
+      "id": "5f5c",
+      "task": "final harsh",
+      "assignee": "8878",
+      "status": "in-progress",
+      "priority": "medium",
+      "dueDate": "2025-09-23",
+      "projectId": "9280"
+    },
+    {
+      "id": "09e4",
+      "task": "xzcZXC",
+      "assignee": "8878",
+      "status": "completed",
+      "priority": "medium",
+      "dueDate": "2025-09-26",
+      "projectId": "9280"
+    },
+    {
+      "id": "d007",
+      "task": "final",
+      "assignee": "8878",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-09-19",
+      "projectId": "f843"
+    },
+    {
+      "id": "bd46",
+      "task": "safdsadas",
+      "assignee": "6f51",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-10-04",
+      "projectId": "683e"
+    },
+    {
+      "id": "4598",
+      "task": "main demo",
+      "assignee": "6f51",
+      "status": "not started",
+      "priority": "medium",
+      "dueDate": "2025-10-03",
+      "projectId": "683e"
     }
   ]
 }

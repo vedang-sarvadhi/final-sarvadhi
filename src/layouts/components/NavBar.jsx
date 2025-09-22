@@ -27,25 +27,19 @@ export default function Navbar() {
 		);
 	};
 
-	// Tasks active for /projects/:projectId/tasks
+  // Tasks active for /tasks or /projects/:projectId/tasks
 	const isTasksActive = () => {
-		return /^\/projects\/[^/]+\/tasks/.test(pathname);
+    return pathname === "/tasks" || /^\/projects\/[^/]+\/tasks/.test(pathname);
 	};
 
-	// Compute Tasks link dynamically based on current project
-	const getTasksLink = () => {
-		const match = pathname.match(/^\/projects\/([^/]+)/);
-		if (match) return `/projects/${match[1]}/tasks/add`;
-
-		// Default project if none visited yet
-		return "/projects/p1_1/tasks/add";
-	};
+  // Tasks link should go to selection-friendly tasks page
+  const getTasksLink = () => "/tasks";
 
 	// Handle Tasks click with Projects visit check
-	const handleTasksClick = () => {
-		if (!visitedProjects) setVisitedProjects(true); // mark projects as visited
-		navigate(getTasksLink());
-	};
+  const handleTasksClick = () => {
+    if (!visitedProjects) setVisitedProjects(true);
+    navigate("/tasks");
+  };
 
 	// Render link with click + keyboard accessibility
 	const renderLink = (

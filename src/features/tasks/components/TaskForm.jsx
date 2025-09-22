@@ -1,15 +1,19 @@
+"use client";
+
 import {
-	Box,
-	Button,
-	Container,
-	Flex,
-	Select,
-	Stack,
-	TextInput,
-	Title,
+  Box,
+  Button,
+  Center,
+  Container,
+  Flex,
+  Select,
+  Stack,
+  TextInput,
+  Title,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import React from "react";
+import { showNotification } from "@mantine/notifications";
+import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useData } from "../../../context/DataContext.jsx";
@@ -17,6 +21,7 @@ import { ROLES } from "../../../core/permissions.js";
 import { useEntity } from "../../../hooks/useEntity.js";
 import { useAuth } from "../../auth/context/AuthContext.jsx";
 
+// Options
 const statusOptions = [
 	{ value: "not started", label: "Not Started" },
 	{ value: "in-progress", label: "In Progress" },
@@ -29,7 +34,7 @@ const priorityOptions = [
 	{ value: "high", label: "High" },
 ];
 
-// Error Boundary Component
+// Error Boundary
 class ErrorBoundary extends React.Component {
 	state = { hasError: false, error: null };
 
@@ -42,7 +47,7 @@ class ErrorBoundary extends React.Component {
 			return (
 				<Center py="lg">
 					<Title order={4} c="red">
-						Error rendering task form: {this.state.error.message}
+						Error rendering task form: {this.state.error?.message || "Unknown"}
 					</Title>
 					<Button mt="md" onClick={() => this.setState({ hasError: false })}>
 						Try Again
@@ -59,14 +64,66 @@ export default function TaskForm() {
 	const { projectId } = useParams();
 	const { addItem } = useEntity("tasks");
 	const { user } = useAuth();
-	const { employees, totalProjects } = useData(); // Added totalProjects to get project name
+	const { employees, projects, tasks, totalProjects } = useData();
 
-	// Find the project name based on projectId
-	const project = totalProjects.find((p) => p.projectIds?.includes(projectId));
-	const projectName = project ? project.projectName : "Unknown Project";
+	const visibleProjects =
+		user?.role === ROLES.ADMIN
+			? totalProjects
+			: totalProjects.filter((p) => {
+					const userProjectIds = Array.isArray(user?.projects)
+						? user.projects
+						: [];
+					const isInAssignedProjects = p.projectIds?.some((id) =>
+						userProjectIds.includes(id),
+					);
+					const hasAssignedTasks = Array.isArray(p.tasks)
+						? p.tasks.some((t) => t.assignee === user?.id)
+						: false;
+					return isInAssignedProjects || hasAssignedTasks;
+				});
 
-	// Dynamically generate assignee options from employees
-	const assigneeOptions = employees.map((emp) => ({
+	// Local state for project options
+	const [projectOptions, setProjectOptions] = useState([]);
+
+	// Build project options after projects and user are loaded
+	useEffect(() => {
+		if (!projects || !user) return;
+
+		let availableProjects = [];
+
+		if (user.role === ROLES.ADMIN) {
+			// Admins see all projects
+			availableProjects = projects;
+		} else {
+			// Users see projects they're assigned to OR have tasks in
+			const userProjectIds = Array.isArray(user.projects) ? user.projects : [];
+
+			// Get projects where user has tasks assigned
+			const projectsWithUserTasks = (tasks || [])
+				.filter((task) => task.assignee === user.id)
+				.map((task) => task.projectId)
+				.filter(Boolean);
+
+			// Combine explicitly assigned projects with projects where user has tasks
+			const allRelevantProjectIds = [
+				...new Set([...userProjectIds, ...projectsWithUserTasks]),
+			];
+
+			availableProjects = projects.filter((p) =>
+				allRelevantProjectIds.includes(p.id),
+			);
+		}
+
+		const options = availableProjects.map((p) => ({
+			value: p.id,
+			label: p.projectName,
+		}));
+
+		setProjectOptions(options);
+	}, [projects, user, tasks]);
+
+	// Build assignee options
+	const assigneeOptions = (employees || []).map((emp) => ({
 		value: emp.id,
 		label: emp.name,
 	}));
@@ -80,24 +137,43 @@ export default function TaskForm() {
 	} = useForm({
 		defaultValues: {
 			task: "",
-			assignee: user.id || "", // Preselect current user if non-admin
+			assignee: user?.id || "",
 			status: "not started",
 			priority: "medium",
 			dueDate: null,
-			projectId: projectId, // Auto-set projectId from URL
+			projectId: projectId || "",
 		},
 	});
 
 	const onSubmit = (data) => {
-		addItem(data, {
-			onSuccess: () => {
-				reset();
-				navigate(`/projects/${projectId}`);
+		if (!data.projectId && !projectId) {
+			showNotification({
+				title: "Project required",
+				message: "Please select a project to add a task.",
+				color: "red",
+			});
+			return;
+		}
+
+		const selectedProjectId = data.projectId || projectId;
+
+		addItem(
+			{ ...data, projectId: selectedProjectId },
+			{
+				onSuccess: () => {
+					reset();
+					navigate(`/projects/${selectedProjectId}`);
+				},
+				onError: (error) => {
+					console.error("Failed to add task:", error);
+					showNotification({
+						title: "Error",
+						message: "Failed to add task. Please try again.",
+						color: "red",
+					});
+				},
 			},
-			onError: (error) => {
-				console.error("Failed to add task:", error);
-			},
-		});
+		);
 	};
 
 	return (
@@ -107,9 +183,28 @@ export default function TaskForm() {
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<Stack spacing="lg" maw={500} w="100%">
 							<Title order={2} ta="center">
-								Add New Task for {projectName}
+								Add New Task
 							</Title>
 
+							{/* Project Select */}
+							<Controller
+								name="projectId"
+								control={control}
+								rules={{ required: !projectId ? "Project is required" : false }}
+								render={({ field }) => (
+									<Select
+										label="Project"
+										placeholder="Select project"
+										data={projectOptions}
+										value={field.value || ""}
+										onChange={field.onChange}
+										disabled={user.role !== ROLES.ADMIN && !!projectId}
+										error={errors.projectId?.message}
+									/>
+								)}
+							/>
+
+							{/* Assignee */}
 							<Controller
 								name="assignee"
 								control={control}
@@ -121,11 +216,12 @@ export default function TaskForm() {
 										data={assigneeOptions}
 										{...field}
 										error={errors.assignee?.message}
-										disabled={user.role !== ROLES.ADMIN} // Non-admins can only assign to themselves
+										disabled={user.role !== ROLES.ADMIN}
 									/>
 								)}
 							/>
 
+							{/* Task Name */}
 							<Controller
 								name="task"
 								control={control}
@@ -140,6 +236,7 @@ export default function TaskForm() {
 								)}
 							/>
 
+							{/* Status */}
 							<Controller
 								name="status"
 								control={control}
@@ -155,6 +252,7 @@ export default function TaskForm() {
 								)}
 							/>
 
+							{/* Priority */}
 							<Controller
 								name="priority"
 								control={control}
@@ -170,6 +268,7 @@ export default function TaskForm() {
 								)}
 							/>
 
+							{/* Due Date */}
 							<Controller
 								name="dueDate"
 								control={control}
@@ -185,6 +284,7 @@ export default function TaskForm() {
 								)}
 							/>
 
+							{/* Buttons */}
 							<Flex justify="flex-end" gap="sm" mt="md">
 								<Link to={`/projects/${projectId}`}>
 									<Button variant="default">Cancel</Button>
