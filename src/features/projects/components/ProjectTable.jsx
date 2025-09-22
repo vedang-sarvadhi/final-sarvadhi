@@ -1,14 +1,14 @@
 "use client";
 
 import {
-	Button,
-	Center,
-	Container,
-	Flex,
-	Loader,
-	Paper,
-	Table,
-	Title,
+  Button,
+  Center,
+  Container,
+  Flex,
+  Loader,
+  Paper,
+  Table,
+  Title,
 } from "@mantine/core";
 import { Component } from "react";
 import { Link } from "react-router-dom";
@@ -44,12 +44,8 @@ export default function ProjectTable() {
 	const { totalProjects, isLoading, error } = useData();
 	const { user } = useAuth();
 
-	// Determine visible projects based on user role
 	const visibleProjects =
 		user?.role === ROLES.ADMIN ? totalProjects : user?.projects || [];
-
-	// Debugging log
-	console.log("Visible Projects:", visibleProjects);
 
 	return (
 		<ErrorBoundary>

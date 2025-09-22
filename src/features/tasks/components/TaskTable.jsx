@@ -1,18 +1,18 @@
 import {
-	Avatar,
-	AvatarGroup,
-	Button,
-	Center,
-	Checkbox,
-	Container,
-	Flex,
-	Group,
-	Loader,
-	Paper,
-	Stack,
-	Table,
-	Text,
-	Title,
+  Avatar,
+  AvatarGroup,
+  Button,
+  Center,
+  Checkbox,
+  Container,
+  Flex,
+  Group,
+  Loader,
+  Paper,
+  Stack,
+  Table,
+  Text,
+  Title,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { useEffect, useReducer } from "react";
@@ -55,10 +55,6 @@ export default function TaskTable() {
 		selectedTasks: new Set(),
 		filterStatus: null,
 	});
-
-	// Debugging logs
-	console.log("User:", user);
-	console.log("User Projects:", user?.projects);
 
 	// Determine visible projects based on user role
 	const visibleProjects =

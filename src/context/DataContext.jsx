@@ -60,9 +60,6 @@ export default function DataProvider({ children }) {
 		return Object.values(projectMap);
 	}, [projects, tasks]);
 
-	// Log for debugging
-	console.log("Total Projects:", totalProjects);
-
 	return (
 		<DataContext.Provider
 			value={{

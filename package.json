@@ -11,7 +11,7 @@
     "check": "bun x biome check .",
     "format": "bun x biome format . --write",
     "ci": "bun x biome check --apply-unsafe .",
-    "server": "bunx json-server locales/db.json --port 4000"
+    "server": "bunx json-server public/db.json --port 4000"
   },
   "dependencies": {
     "@mantine/core": "8.2.5",
@@ -25,6 +25,7 @@
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "json-server": "^1.0.0-beta.3",
+    "msw": "^2.11.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.62.0",
@@ -43,7 +44,9 @@
     "postcss-preset-mantine": "1.17.0",
     "postcss-simple-vars": "^7.0.1",
     "typescript": "^5.8.3",
-    "vite": "^7.1.7"
+    "vite": "^7.1.7",
+    "@types/bun": "latest"
   },
-  "packageManager": "yarn@4.9.2"
+  "packageManager": "yarn@4.9.2",
+  "module": "index.ts"
 }
