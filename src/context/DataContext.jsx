@@ -1,30 +1,74 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useEntity } from "../hooks/useEntity.js";
 
 export const DataContext = createContext();
 
 export default function DataProvider({ children }) {
-	const { data: employees, isLoading, error } = useEntity("employees");
+	// Fetch employees, projects, and tasks using useEntity
+	const {
+		data: employeesData,
+		isLoading: employeesLoading,
+		error: employeesError,
+	} = useEntity("employees");
+	const {
+		data: projectsData,
+		isLoading: projectsLoading,
+		error: projectsError,
+	} = useEntity("projects");
+	const {
+		data: tasksData,
+		isLoading: tasksLoading,
+		error: tasksError,
+	} = useEntity("tasks");
 
-	const data = Array.isArray(employees) ? employees : (employees?.data ?? []);
+	// Ensure data is an array, fallback to empty array if undefined
+	const employees = Array.isArray(employeesData)
+		? employeesData
+		: (employeesData?.data ?? []);
+	const projects = Array.isArray(projectsData)
+		? projectsData
+		: (projectsData?.data ?? []);
+	const tasks = Array.isArray(tasksData) ? tasksData : (tasksData?.data ?? []);
 
-	const projects = data.flatMap((emp) => emp.projects || []);
+	// Combine loading states (true if any are loading)
+	const isLoading = employeesLoading || projectsLoading || tasksLoading;
 
-	const totalProjects = Object.values(
-		projects.reduce((acc, obj) => {
-			acc[obj.projectName] = { ...obj };
+	// Combine errors (return the first non-null error)
+	const error = employeesError || projectsError || tasksError;
+
+	// Compute totalProjects: group projects by projectName
+	const totalProjects = useMemo(() => {
+		const projectMap = projects.reduce((acc, proj) => {
+			if (!acc[proj.projectName]) {
+				acc[proj.projectName] = {
+					projectName: proj.projectName,
+					description: proj.description,
+					projectIds: [proj.id], // Track all project IDs
+					employeeIds: [proj.employeeId], // Track associated employees
+					tasks: tasks.filter((task) => task.projectId === proj.id), // Tasks for this project
+				};
+			} else {
+				acc[proj.projectName].projectIds.push(proj.id);
+				acc[proj.projectName].employeeIds.push(proj.employeeId);
+				acc[proj.projectName].tasks.push(
+					...tasks.filter((task) => task.projectId === proj.id),
+				);
+			}
 			return acc;
-		}, {}),
-	);
+		}, {});
 
-	console.log(totalProjects);
-	// const tasks =
+		return Object.values(projectMap);
+	}, [projects, tasks]);
+
+	// Log for debugging
+	console.log("Total Projects:", totalProjects);
 
 	return (
 		<DataContext.Provider
 			value={{
-				employees: data,
+				employees,
 				projects,
+				tasks,
 				totalProjects,
 				isLoading,
 				error,
@@ -36,12 +80,13 @@ export default function DataProvider({ children }) {
 }
 
 export function useData() {
-	const { employees, projects, totalProjects, isLoading, error } =
+	const { employees, projects, tasks, totalProjects, isLoading, error } =
 		useContext(DataContext);
 
 	return {
 		employees,
 		projects,
+		tasks,
 		totalProjects,
 		isLoading,
 		error,

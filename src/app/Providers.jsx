@@ -12,13 +12,13 @@ export function Providers({ children }) {
 	return (
 		<MantineProvider>
 			<QueryClientProvider client={queryClient}>
-				<BrowserRouter>
-					<DataProvider>
+				<DataProvider>
+					<BrowserRouter>
 						<AuthProvider>
 							<AppRoutes>{children}</AppRoutes>
 						</AuthProvider>
-					</DataProvider>
-				</BrowserRouter>
+					</BrowserRouter>
+				</DataProvider>
 			</QueryClientProvider>
 		</MantineProvider>
 	);

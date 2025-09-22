@@ -1,4 +1,3 @@
-"use client";
 import {
 	Box,
 	Button,
@@ -9,25 +8,15 @@ import {
 	TextInput,
 	Title,
 } from "@mantine/core";
-import "@mantine/core/styles.css";
 import { DateInput } from "@mantine/dates";
-import "@mantine/dates/styles.css";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useData } from "../../../context/DataContext.jsx";
+import { ROLES } from "../../../core/permissions.js";
 import { useEntity } from "../../../hooks/useEntity.js";
 import { useAuth } from "../../auth/context/AuthContext.jsx";
 
-const assigneeOptions = [
-	{ value: "john", label: "John Doe" },
-	{ value: "jane", label: "Jane Smith" },
-	{ value: "michael", label: "Michael Johnson" },
-];
-
-const projectOptions = [
-	{ value: "john", label: "John Doe" },
-	{ value: "jane", label: "Jane Smith" },
-	{ value: "michael", label: "Michael Johnson" },
-];
 const statusOptions = [
 	{ value: "not started", label: "Not Started" },
 	{ value: "in-progress", label: "In Progress" },
@@ -40,13 +29,47 @@ const priorityOptions = [
 	{ value: "high", label: "High" },
 ];
 
+// Error Boundary Component
+class ErrorBoundary extends React.Component {
+	state = { hasError: false, error: null };
+
+	static getDerivedStateFromError(error) {
+		return { hasError: true, error };
+	}
+
+	render() {
+		if (this.state.hasError) {
+			return (
+				<Center py="lg">
+					<Title order={4} c="red">
+						Error rendering task form: {this.state.error.message}
+					</Title>
+					<Button mt="md" onClick={() => this.setState({ hasError: false })}>
+						Try Again
+					</Button>
+				</Center>
+			);
+		}
+		return this.props.children;
+	}
+}
+
 export default function TaskForm() {
 	const navigate = useNavigate();
-	const { addItem } = useEntity("employees");
+	const { projectId } = useParams();
+	const { addItem } = useEntity("tasks");
+	const { user } = useAuth();
+	const { employees, totalProjects } = useData(); // Added totalProjects to get project name
 
-	const { employees } = useAuth();
+	// Find the project name based on projectId
+	const project = totalProjects.find((p) => p.projectIds?.includes(projectId));
+	const projectName = project ? project.projectName : "Unknown Project";
 
-	console.log("main main", employees);
+	// Dynamically generate assignee options from employees
+	const assigneeOptions = employees.map((emp) => ({
+		value: emp.id,
+		label: emp.name,
+	}));
 
 	const {
 		register,
@@ -57,10 +80,11 @@ export default function TaskForm() {
 	} = useForm({
 		defaultValues: {
 			task: "",
-			assignee: "",
-			status: "",
-			priority: "",
+			assignee: user.id || "", // Preselect current user if non-admin
+			status: "not started",
+			priority: "medium",
 			dueDate: null,
+			projectId: projectId, // Auto-set projectId from URL
 		},
 	});
 
@@ -68,7 +92,7 @@ export default function TaskForm() {
 		addItem(data, {
 			onSuccess: () => {
 				reset();
-				navigate("/projects/details");
+				navigate(`/projects/${projectId}`);
 			},
 			onError: (error) => {
 				console.error("Failed to add task:", error);
@@ -77,112 +101,100 @@ export default function TaskForm() {
 	};
 
 	return (
-		<Box mt="50" ml="100">
-			<Container size="sm">
-				<form onSubmit={handleSubmit(onSubmit)}>
-					<Stack spacing="lg" maw={500} w="100%">
-						<Title order={2} ta="center">
-							Add New Task
-						</Title>
+		<ErrorBoundary>
+			<Box mt="50" ml="100">
+				<Container size="sm">
+					<form onSubmit={handleSubmit(onSubmit)}>
+						<Stack spacing="lg" maw={500} w="100%">
+							<Title order={2} ta="center">
+								Add New Task for {projectName}
+							</Title>
 
-						<Controller
-							name="assignee"
-							control={control}
-							rules={{ required: "Assignee is required" }}
-							render={({ field }) => (
-								<Select
-									label="Assignee"
-									placeholder="Select assignee"
-									data={assigneeOptions}
-									{...field}
-									error={errors.assignee?.message}
-								/>
-							)}
-						/>
+							<Controller
+								name="assignee"
+								control={control}
+								rules={{ required: "Assignee is required" }}
+								render={({ field }) => (
+									<Select
+										label="Assignee"
+										placeholder="Select assignee"
+										data={assigneeOptions}
+										{...field}
+										error={errors.assignee?.message}
+										disabled={user.role !== ROLES.ADMIN} // Non-admins can only assign to themselves
+									/>
+								)}
+							/>
 
-						<Controller
-							name="projects"
-							control={control}
-							rules={{ required: "Project name is required" }}
-							render={({ field }) => (
-								<Select
-									label="Project Name"
-									placeholder="Enter project name"
-									data={projectOptions}
-									{...field}
-									error={errors.task?.message}
-								/>
-							)}
-						/>
+							<Controller
+								name="task"
+								control={control}
+								rules={{ required: "Task name is required" }}
+								render={({ field }) => (
+									<TextInput
+										label="Task Name"
+										placeholder="Enter task name"
+										{...field}
+										error={errors.task?.message}
+									/>
+								)}
+							/>
 
-						<Controller
-							name="task"
-							control={control}
-							rules={{ required: "Task name is required" }}
-							render={({ field }) => (
-								<TextInput
-									label="Task Name"
-									placeholder="Enter task name"
-									{...field}
-									error={errors.task?.message}
-								/>
-							)}
-						/>
+							<Controller
+								name="status"
+								control={control}
+								rules={{ required: "Status is required" }}
+								render={({ field }) => (
+									<Select
+										label="Status"
+										placeholder="Select status"
+										data={statusOptions}
+										{...field}
+										error={errors.status?.message}
+									/>
+								)}
+							/>
 
-						<Controller
-							name="status"
-							control={control}
-							rules={{ required: "Status is required" }}
-							render={({ field }) => (
-								<Select
-									label="Status"
-									placeholder="Select status"
-									data={statusOptions}
-									{...field}
-									error={errors.status?.message}
-								/>
-							)}
-						/>
+							<Controller
+								name="priority"
+								control={control}
+								rules={{ required: "Priority is required" }}
+								render={({ field }) => (
+									<Select
+										label="Priority"
+										placeholder="Select priority"
+										data={priorityOptions}
+										{...field}
+										error={errors.priority?.message}
+									/>
+								)}
+							/>
 
-						<Controller
-							name="priority"
-							control={control}
-							rules={{ required: "Priority is required" }}
-							render={({ field }) => (
-								<Select
-									label="Priority"
-									placeholder="Select priority"
-									data={priorityOptions}
-									{...field}
-									error={errors.priority?.message}
-								/>
-							)}
-						/>
+							<Controller
+								name="dueDate"
+								control={control}
+								rules={{ required: "Due date is required" }}
+								render={({ field }) => (
+									<DateInput
+										label="Due Date"
+										placeholder="Pick a date"
+										clearable
+										{...field}
+										error={errors.dueDate?.message}
+									/>
+								)}
+							/>
 
-						<Controller
-							name="dueDate"
-							control={control}
-							rules={{ required: "Due date is required" }}
-							render={({ field }) => (
-								<DateInput
-									label="Due Date"
-									placeholder="Pick a date"
-									clearable
-									{...field}
-									error={errors.dueDate?.message}
-								/>
-							)}
-						/>
-
-						<Flex justify="flex-end" gap="sm" mt="md">
-							<Link to="/projects/details">
-								<Button variant="default">Cancel</Button>
-							</Link>
-							<Button type="submit">Submit</Button>
-						</Flex>
-					</Stack>
-				</form>
-			</Container>
-		</Box>
+							<Flex justify="flex-end" gap="sm" mt="md">
+								<Link to={`/projects/${projectId}`}>
+									<Button variant="default">Cancel</Button>
+								</Link>
+								<Button type="submit">Submit</Button>
+							</Flex>
+						</Stack>
+					</form>
+				</Container>
+			</Box>
+		</ErrorBoundary>
 	);
 }

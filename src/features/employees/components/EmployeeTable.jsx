@@ -9,10 +9,9 @@ import {
 	Title,
 } from "@mantine/core";
 import { Link } from "react-router-dom";
-import { useData } from "../../../context/DataContext.jsx";
-
+import { useEntity } from "../../../hooks/useEntity.js";
 export default function EmployeesTable() {
-	const { isLoading, employees } = useData();
+	const { data: employees, isLoading } = useEntity("employees");
 
 	return (
 		<Container size="lg" mt="xl">

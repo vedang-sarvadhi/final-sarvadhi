@@ -1,4 +1,5 @@
 "use client";
+
 import {
 	Box,
 	Button,
@@ -9,13 +10,24 @@ import {
 	TextInput,
 	Title,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import { ROLES } from "../../../core/permissions.js";
 import { useEntity } from "../../../hooks/useEntity.js";
+import { useAuth } from "../../auth/context/AuthContext.jsx";
 
-export default function CreateProjectForm({ employeeId }) {
-	const { addItem } = useEntity(`employees/${employeeId}/projects`);
+export default function CreateProjectForm() {
+	const { addItem } = useEntity("projects");
 	const navigate = useNavigate();
+	const { user } = useAuth();
+
+	// Check if user is authorized (only admins can create projects)
+	if (user?.role !== ROLES.ADMIN) {
+		console.error("Unauthorized access to create project");
+		navigate("/unauthorized");
+		return null;
+	}
 
 	const {
 		register,
@@ -26,28 +38,40 @@ export default function CreateProjectForm({ employeeId }) {
 		defaultValues: {
 			projectName: "",
 			description: "",
+			tasks: "",
 		},
 	});
 
-	const onSubmit = (data) => {
-		const formattedData = {
-			projectName: data.projectName,
-			description: data.description,
-			tasks: data.tasks.map((task) => ({
-				taskName: task.taskName,
-				completed: false,
-			})),
-		};
+	const onSubmit = async (data) => {
+		try {
+			const formattedData = {
+				projectName: data.projectName,
+				description: data.description,
+				tasks: data.tasks
+					.split("\n")
+					.filter((task) => task.trim())
+					.map((taskName) => ({
+						taskName: taskName.trim(),
+						completed: false,
+					})),
+			};
 
-		addItem(formattedData, {
-			onSuccess: () => {
-				reset();
-				navigate(`/employees/${employeeId}/projects`);
-			},
-			onError: (error) => {
-				console.error("Failed to add project:", error);
-			},
-		});
+			await addItem(formattedData);
+			showNotification({
+				title: "Success",
+				message: "Project created successfully",
+				color: "green",
+			});
+			reset();
+			navigate("/projects"); // Navigate to a general projects list page
+		} catch (error) {
+			console.error("Failed to add project:", error);
+			showNotification({
+				title: "Error",
+				message: "Failed to create project. Please try again.",
+				color: "red",
+			});
+		}
 	};
 
 	return (
@@ -82,7 +106,7 @@ export default function CreateProjectForm({ employeeId }) {
 
 						{/* Buttons */}
 						<Flex justify="flex-end" gap="sm" mt="md">
-							<Link to={`/employees/${employeeId}/projects`}>
+							<Link to="/projects">
 								<Button variant="default">Cancel</Button>
 							</Link>
 							<Button type="submit">Create Project</Button>

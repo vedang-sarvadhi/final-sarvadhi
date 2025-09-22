@@ -36,15 +36,86 @@ function authReducer(state, action) {
 export const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
-	const { employees } = useData();
+	const { employees, projects, tasks } = useData();
 	const location = useLocation();
 
 	const [state, dispatch] = useReducer(authReducer, initialState);
 
-	const employeeMap = useMemo(
-		() => new Map(employees.map((emp) => [emp.email.toLowerCase(), emp])),
-		[employees],
-	);
+	// Enrich employees with their projects and tasks
+	const enrichedEmployees = useMemo(() => {
+		if (!Array.isArray(employees)) {
+			console.warn("Employees data is not an array:", employees);
+			return [];
+		}
+		return employees
+			.filter(
+				(emp) => emp && emp.id && emp.email && typeof emp.email === "string",
+			)
+			.map((emp) => {
+				const empProjects = projects.filter(
+					(proj) => proj.employeeId === emp.id,
+				);
+				const empTasks = tasks.filter((task) => task.employeeId === emp.id);
+				return {
+					...emp,
+					projects: empProjects,
+					tasks: empTasks,
+				};
+			});
+	}, [employees, projects, tasks]);
+
+	// Map employees by email for quick lookup
+	const employeeMap = useMemo(() => {
+		if (!Array.isArray(enrichedEmployees)) {
+			console.warn("Enriched employees is not an array:", enrichedEmployees);
+			return new Map();
+		}
+		const validEmployees = enrichedEmployees.filter(
+			(emp) => emp.email && typeof emp.email === "string",
+		);
+		if (validEmployees.length < enrichedEmployees.length) {
+			console.warn(
+				"Some employees have invalid emails:",
+				enrichedEmployees.filter(
+					(emp) => !emp.email || typeof emp.email !== "string",
+				),
+			);
+		}
+		return new Map(validEmployees.map((emp) => [emp.email.toLowerCase(), emp]));
+	}, [enrichedEmployees]);
+
+	// Build projectMap to aggregate projects and their tasks
+	const projectMap = useMemo(() => {
+		const map = new Map();
+
+		projects.forEach((proj) => {
+			if (!map.has(proj.id)) {
+				map.set(proj.id, {
+					...proj,
+					tasks: [],
+					owners: new Set(),
+				});
+			}
+
+			const existing = map.get(proj.id);
+			// Add tasks for this project
+			const projTasks = tasks.filter((task) => task.projectId === proj.id);
+			existing.tasks.push(...projTasks);
+			// Add owner (employee name)
+			const emp = enrichedEmployees.find((e) => e.id === proj.employeeId);
+			if (emp) {
+				existing.owners.add(emp.name);
+			}
+		});
+
+		// Convert owners Set to Array
+		return new Map(
+			[...map.entries()].map(([id, proj]) => [
+				id,
+				{ ...proj, owners: [...proj.owners] },
+			]),
+		);
+	}, [projects, tasks, enrichedEmployees]);
 
 	useEffect(() => {
 		const savedUser = localStorage.getItem("user");
@@ -61,37 +132,6 @@ export default function AuthProvider({ children }) {
 			dispatch({ type: "logout" });
 		}
 	}, [location.pathname]);
-
-	const projectMap = useMemo(() => {
-		const map = new Map();
-
-		employees.forEach((emp) => {
-			emp.projects?.forEach((proj) => {
-				if (!map.has(proj.id)) {
-					// first time seeing this project → create it
-					map.set(proj.id, {
-						...proj,
-						tasks: [], // ensure tasks array is fresh
-						owners: new Set(), // track multiple owners
-					});
-				}
-
-				const existing = map.get(proj.id);
-				// merge tasks (spread so we don't nest arrays)
-				existing.tasks.push(...proj.tasks);
-				// track owner(s)
-				existing.owners.add(emp.name);
-			});
-		});
-
-		// Convert owners Set → Array before returning
-		return new Map(
-			[...map.entries()].map(([id, proj]) => [
-				id,
-				{ ...proj, owners: [...proj.owners] },
-			]),
-		);
-	}, [employees]);
 
 	async function authenticateEmployee(email, password) {
 		const emp = employeeMap.get(email.toLowerCase());
@@ -134,12 +174,13 @@ export default function AuthProvider({ children }) {
 		return state?.user?.permissions?.includes(page) ?? false;
 	}
 
-	const visibleEmployees =
-		state.user?.role === ROLES.ADMIN
-			? employees.map(({ password, ...e }) => e)
-			: state.user
-				? [{ ...state.user }]
-				: [];
+	// Filter employees based on role
+	const visibleEmployees = useMemo(() => {
+		if (state.user?.role === ROLES.ADMIN) {
+			return enrichedEmployees.map(({ password, ...e }) => e);
+		}
+		return state.user ? [{ ...state.user }] : [];
+	}, [state.user, enrichedEmployees]);
 
 	return (
 		<AuthContext.Provider

@@ -1,8 +1,11 @@
 import { Container, Grid, Paper, Text, Title } from "@mantine/core";
-import { useData } from "../../../context/DataContext.jsx";
+import { useEntity } from "../../../hooks/useEntity.js";
 
 export default function Dashboard() {
-	const { totalProjects, employees, isLoading } = useData();
+	const { data: employees, isLoading: isEmployeesLoading } =
+		useEntity("employees");
+	const { data: projects, isLoading: isProjectsLoading } =
+		useEntity("projects");
 
 	return (
 		<Container size="lg" py="xl" mt="lg">
@@ -19,7 +22,7 @@ export default function Dashboard() {
 							Total Projects
 						</Text>
 						<Title order={3}>
-							{isLoading ? "Loading..." : totalProjects.length}
+							{isProjectsLoading ? "Loading..." : (projects?.length ?? 0)}
 						</Title>
 					</Paper>
 				</Grid.Col>
@@ -36,7 +39,7 @@ export default function Dashboard() {
 							Total Employees
 						</Text>
 						<Title order={3}>
-							{isLoading ? "Loading..." : employees.length}
+							{isEmployeesLoading ? "Loading..." : (employees?.length ?? 0)}
 						</Title>
 					</Paper>
 				</Grid.Col>
